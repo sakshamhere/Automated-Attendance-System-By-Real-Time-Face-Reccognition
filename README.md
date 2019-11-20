@@ -8,7 +8,7 @@ Hi there! , this is a college project made by me , as heading says the aim is to
 4. **Managing students data and faculty data through excel by the help of GUI**
 5. **Notifying students and teachers about attendance statistics via email**
 
-- Detection
+## - **Detection**
 
 Detection is done by the help of OpenCV and Haar cascades
 
