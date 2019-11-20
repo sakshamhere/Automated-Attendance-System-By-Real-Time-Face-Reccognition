@@ -1,4 +1,5 @@
-#Automated Attendance System by Face Recognition
+# **Automated Attendance System by Face Recognition**
+
 dataset folder contains orignal images
 
 by to_grayscale.py
