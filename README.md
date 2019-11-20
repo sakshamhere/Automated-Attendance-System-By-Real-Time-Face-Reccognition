@@ -35,20 +35,17 @@ _By the help of gui CRUD operations can be performed in excel files_
 _After recognition code automatically calculates statistics like attendance percentage keeping in all constraints_
 _like working days holidays ._
 
-dataset folder contains orignal images
+## - **Python libraries used**
 
-by to_grayscale.py
-image is being cropped
-histogram normalisation is done (equ = cv2.equalizeHist(gray))
-noise removal is done ( final = cv2.medianBlur(equ, 3))
-
-    and images are saved to gray_images
-
-    further these images are being trained and .yml is obtained
-
-
-    rest all files like data.csv data.xls , update.py, are for attendance marking and all
-
-    ignore other folders like cropped_images
-
-    folder tkinter-gui is for all gui work
+- **OpenCV-python**
+- **Pandas**
+- **Numpy**
+- **csv**
+- **Pilow**
+- **smtplib**
+- **calender**
+- **holidays**
+- **datetime**
+- **openpyxl**
+- **tkinter**
+- **xlrd**
