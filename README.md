@@ -16,15 +16,15 @@ _Face detection using Haar cascades is a machine learning based approach where a
 
 ## - **Recognition**
 
-\_Recognition is done by LBPH recogniser
+_Recognition is done by LBPH recogniser_
 
-Local Binary Pattern (LBP) is a simple yet very efficient texture operator which labels the pixels of an image by thresholding the neighborhood of each pixel and considers the result as a binary number.
+_Local Binary Pattern (LBP) is a simple yet very efficient texture operator which labels the pixels of an image by thresholding the neighborhood of each pixel and considers the result as a binary number._
 
-LBPH is one of the easiest face recognition algorithms.
-It can represent local features in the images.
-It is possible to get great results (mainly in a controlled environment).
-It is robust against monotonic gray scale transformations.
-It is provided by the OpenCV library (Open Source Computer Vision Library).\_
+_LBPH is one of the easiest face recognition algorithms._
+_It can represent local features in the images._
+_It is possible to get great results (mainly in a controlled environment)._
+_It is robust against monotonic gray scale transformations._
+_It is provided by the OpenCV library (Open Source Computer Vision Library)._
 
 ## - **Updating record in Excel**
 
