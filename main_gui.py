@@ -1,29 +1,212 @@
+# import libraries
+################################### lib for TKINTER GUI
 from tkinter import *
-from PIL import Image, ImageTk
 import tkinter.messagebox as tmsg
-import os
-from openpyxl import *
+################################### importing scripts
 from scripts import update as up
 from scripts import detect as dt
 from scripts import Dates as D
+################################### lib to perform CRUD operations in csv/excel
+from PIL import Image, ImageTk
+from openpyxl import *
+import pandas as pd
+import numpy as np
+import csv
+################################### other dependencies
 import datetime
+import time
+import os
 
+'''*************************************************************** Code for CRUD operations starts ****************************************************************''' 
+
+def clear():  # clear the content of text entry box 
+    try:
+        name.delete(0, END) 
+        enroll.delete(0, END) 
+        course.delete(0, END) 
+        semester.delete(0, END) 
+        section.delete(0, END) 
+        contact.delete(0, END) 
+        email.delete(0, END) 
+    except:
+        pass
+
+def modify_in_record(sem,sec,new):
+    if sem == '1' or sem == '2':
+        year = 'first_year'
+    elif sem == '3' or sem == '4':
+        year = 'second_year'
+    elif sem == '5' or sem == '6':
+        year = 'third_year'
+    else:
+        year = 'fourth_year'
+    # print(new,sem,sec)
+    filename = f'data/excel/{year}/{year}_{sem}sem_IT{sec}.xlsx'
+    df = pd.read_excel(filename,index=False)
+    df.to_csv('./data.csv')
+    newlines = []
+    with open('data.csv','r') as f:
+        data = csv.reader(f)
+        lines = list(data)
+        for line in lines:
+            if line[1]==new[3]:
+                print('Initial record',line)
+                line[2],line[3],line[4]= new[0],new[5],new[4]
+                newlines.append(line[1:])
+            else:
+
+                newlines.append(line[1:])
+
+    with open('current.csv','w') as g:
+        writer = csv.writer(g,lineterminator='\n')
+        writer.writerows(newlines)
+
+    df = pd.read_csv('current.csv')
+    f = pd.ExcelWriter(filename)
+    df.to_excel(f,index=False)
+    f.save()
+    print('Record updated for',new[0])
+    
+def Register_in_record():
+
+    if semester.get() == '1' or semester.get() == '2':
+        year = 'first_year'
+    elif semester.get() == '3' or semester.get() == '4':
+        year = 'second_year'
+    elif semester.get() == '5' or semester.get() == '6':
+        year = 'third_year'
+    else:
+        year = 'fourth_year'
+
+    print(sectionn.get())
+
+    wb = load_workbook(f'data/excel/{year}/{year}_{semester.get()}sem_IT{sectionn.get()}.xlsx') 
+
+    sheet = wb.active 
+    sheet.column_dimensions['A'].width = 20
+    sheet.column_dimensions['B'].width = 15
+    sheet.column_dimensions['C'].width = 10
+    sheet.column_dimensions['D'].width = 10
+
+    sheet.cell(row=1, column=1).value = "Enrollment Number"
+    sheet.cell(row=1, column=2).value = "Name"
+    sheet.cell(row=1, column=3).value = "Email ID"
+    sheet.cell(row=1, column=4).value = "WhatsApp Mobile Number"
+    
+    current_row = sheet.max_row 
+    current_column = sheet.max_column 
+
+    sheet.cell(row=current_row + 1, column=1).value = enroll.get()
+    sheet.cell(row=current_row + 1, column=2).value = name.get()
+    sheet.cell(row=current_row + 1, column=3).value = email.get() 
+    sheet.cell(row=current_row + 1, column=4).value = contact.get() 
+    
+    wb.save(f'data/excel/{year}/{year}_{semester.get()}sem_IT{sectionn.get()}.xlsx') 
+
+    print(name.get()," is Registered successfully")
+
+    clear() # clearing field
+
+def Retrive(roll,sem,year,section):
+    if sem == '1' or sem == '2':
+        year = 'first_year'
+    elif sem == '3' or sem == '4':
+        year = 'second_year'
+    elif sem == '5' or sem == '6':
+        year = 'third_year'
+    else:
+        year = 'fourth_year'
+
+    filename = f'data/excel/{year}/{year}_{sem}sem_IT{section}.xlsx'
+    df = pd.read_excel(filename,index=False)
+    l = df[df['Enrollment Number']==roll].values.tolist()
+
+    return l
+
+def delete(enroll,sem,sec):
+    if sem == '1' or sem == '2':
+        year = 'first_year'
+    elif sem == '3' or sem == '4':
+        year = 'second_year'
+    elif sem == '5' or sem == '6':
+        year = 'third_year'
+    else:
+        year = 'fourth_year'
+    # print(enroll)
+    filename = f'data/excel/{year}/{year}_{sem}sem_IT{sec}.xlsx'
+    df = pd.read_excel(filename,index=False)
+    df.to_csv('./data.csv')
+    nlines = []
+    with open('data.csv','r') as f:
+        data = csv.reader(f)
+        lines = list(data)
+        for line in lines:
+            # print(line)
+            if enroll in line:
+                print('Deleting record of ',line[2])
+                pass
+            else:
+                nlines.append(line[1:])
+    
+    with open('current.csv','w') as g:
+        writer = csv.writer(g,lineterminator='\n')
+        writer.writerows(nlines)
+    time.sleep(3)
+
+    
+
+    df = pd.read_csv('current.csv')
+    f = pd.ExcelWriter(filename)
+    df.to_excel(f,index=False)
+    f.save()
+    print('Record deleted successfully')
+
+def updatef():
+    filename = 'ddata/Attendance_xlsx/third_year_5sem_IT2.xlsx'
+    with open('data.csv') as f:
+        data = csv.reader(f)
+        lines = list(data)
+        if lines[1][0] == '0':
+            
+            for line in lines:
+                line.pop(0)
+            with open('data.csv','w') as g:
+                writer = csv.writer(g,lineterminator='\n')
+                writer.writerows(lines)
+            
+            df = pd.read_csv('data.csv')
+            df.to_excel(filename,index = False)
+            mail()
+
+        else:
+            print('Already Updated')
+
+'''*************************************************************** Code for CRUD operations Ends ****************************************************************''' 
+'''*************************************************************** Code for GUI starts ****************************************************************''' 
+
+'''*************************************************************** initialize Window ****************************************************************''' 
+
+# creating tkinter window
 root = Tk()
-root.geometry("580x550")
+
+# creating fixed geometry of the 
+# tkinter window with dimensions 150x200 
+root.geometry("150x200")
 root.maxsize(580,550)
 root.minsize(580,550)
+
+#providing a title
 root.title("Auto Attendance..")
 
 image = Image.open("GUI/register.jpg")
 image=image.resize((580,600), Image.ANTIALIAS)
 photo = ImageTk.PhotoImage(image)
 
+''' ************************************************************* Code for Login window starts ********************************************************'''
+global login_by
 Admin_id="admin"
 Admin_pass="admin@123"
-global login_by
 
-'''final code for login section  is start here     '''    
-l_login=Label(image=photo)
 def Login():
     global login_by
     lid1=lid.get()
@@ -31,53 +214,33 @@ def Login():
     print(lid.get(),lpass.get())
     if(lid1==Admin_id and lpass1==Admin_pass):
         login_by="Admin"
-        login_allow()
+        Proceed_menu()
     else:
         login_by=""
-        login_allow()
+        Proceed_menu()
 
-  
-f_login=Frame(l_login,pady="25",padx="25")
-lb0=Label(f_login,text="Enter Details",bg="orange",fg="blue",font="lucida 10 bold",width="35",pady="4").grid(columnspan=3,row=0,pady="15")
-lb1=Label(f_login,text="Enter ID: ",font="lucida 10 bold").grid(column=0,row=2,pady="4")
-lid=StringVar()
-e1=Entry(f_login,textvariable=lid,width="28").grid(column=1,row=2)
-lb2=Label(f_login,text="Enter Password: ",font="lucida 10 bold").grid(column=0,row=3,pady="4")
+l_login=Label(image=photo)
+f_login=Frame(l_login,pady="25",padx="25") #cretaing a Frame which can expand according to the size of the window
+
+lb0 =Label(f_login,text="Enter Details",bg="orange",fg="blue",font="lucida 10 bold",width="35",pady="4").grid(columnspan=3,row=0,pady="15")
+lb1 =Label(f_login,text="Enter ID: ",font="lucida 10 bold").grid(column=0,row=2,pady="4")
+
+lid =StringVar()
+e1 =Entry(f_login,textvariable=lid,width="28").grid(column=1,row=2)
+lb2 =Label(f_login,text="Enter Password: ",font="lucida 10 bold").grid(column=0,row=3,pady="4")
+
 lpass=StringVar()
 e2=Entry(f_login,textvariable=lpass,width="28").grid(column=1,row=3)
 btn=Button(f_login,text="login",bg="green",fg="white",width="10",font="lucida 10 bold",command=Login)
 btn.grid(columnspan=3,row=5,pady="10")
+
 f_login.pack(pady="165")
 
 l_login.pack(ipadx="100",fill=BOTH)
-'''final code for login section  is end here     '''
 
-def excel(): 
+''' ************************************************************* Code for Login window Ends ********************************************************'''
 
-    # resize the width of columns in 
-    # excel spreadsheet 
-    sheet.column_dimensions['A'].width = 30
-    sheet.column_dimensions['B'].width = 10
-    sheet.column_dimensions['C'].width = 10
-    sheet.column_dimensions['D'].width = 20
-    sheet.column_dimensions['E'].width = 20
-    sheet.column_dimensions['F'].width = 40
-    sheet.column_dimensions['G'].width = 50
-
-    # write given data to an excel spreadsheet 
-    # at particular location 
-    sheet.cell(row=1, column=1).value = "Name"
-    sheet.cell(row=1, column=2).value = "Enrollment No"
-    sheet.cell(row=1, column=3).value = "Semester"
-    sheet.cell(row=1, column=4).value = "Form Number"
-    sheet.cell(row=1, column=5).value = "Contact Number"
-    sheet.cell(row=1, column=6).value = "Email id"
-    sheet.cell(row=1, column=7).value = "Address"
-
-
-
-
-
+''' ************************************************************* Code for Menu Widgit starts ********************************************************'''
 
 
 def student(x):
@@ -137,9 +300,8 @@ def admin(x):
     elif(x==2):
         print("i will open excel of teachers")
 
-    
-''' code for menu is start here     '''
-def login_allow():
+  
+def Proceed_menu():
     global login_by
     l_login.pack_forget()
     
@@ -174,120 +336,12 @@ def login_allow():
     root.config(menu=mainmenu)
     mainmenu.add_cascade(label="More", menu=m3)
     
-''' code for menu is end here     '''
+''' ************************************************************* Code for Menu Widgit Ends ********************************************************'''
+
+''' ************************************************************* Code for Registeration starts ********************************************************'''
+
 
 l = Label(image=photo)
- 
-''' code for student registration  is start here     '''   
-def update_in_attendace_sheet():
-    if semester.get() == '1' or semester.get() == '2':
-        year = 'first_year'
-    elif semester.get() == '3' or semester.get() == '4':
-        year = 'second_year'
-    elif semester.get() == '5' or semester.get() == '6':
-        year = 'third_year'
-    else:
-        year = 'fourth_year'
-    
-    wb = load_workbook(f'../data/excel/{year}/{year}_{semester.get()}sem_IT{section.get()}.xlsx') 
-    sheet = wb.active 
-    sheet.column_dimensions['A'].width = 20
-    sheet.column_dimensions['B'].width = 15
-    sheet.column_dimensions['C'].width = 10
-    sheet.column_dimensions['D'].width = 10
-    sheet.column_dimensions['E'].width = 10
-    sheet.column_dimensions['F'].width = 15
-    sheet.column_dimensions['G'].width = 25
-
-    # write given data to an excel spreadsheet 
-    
-    # at particular location 
-    sheet.cell(row=1, column=1).value = "Name"
-    sheet.cell(row=1, column=2).value = "Enrollment"
-    
-    
-    
-    current_row = sheet.max_row 
-    current_column = sheet.max_column 
-
-    sheet.cell(row=current_row + 1, column=1).value = name.get() 
-    sheet.cell(row=current_row + 1, column=2).value = enroll.get() 
- 
-     
-    wb.save(f'../data/excel/{year}/{year}_{semester.get()}sem_IT{section.get()}.xlsx') 
-    
-
-def update_in_data_sheet():
-    #update_in_attendace_sheet()
-    # if (e1.get() == "" and
-    #     e2.get() == "" and
-    #     e3.get() == "" and
-    #     e4.get() == "" and
-    #     e5.get() == "" and
-    #     e6.get() == ""):
-    #     print("empty input") 
-    if semester.get() == '1' or semester.get() == '2':
-        year = 'first_year'
-    elif semester.get() == '3' or semester.get() == '4':
-        year = 'second_year'
-    elif semester.get() == '5' or semester.get() == '6':
-        year = 'third_year'
-    else:
-        year = 'fourth_year'
-    
-    #wb = load_workbook(f'../data/excel/{year}/{year}_{semester.get()}sem_IT{section.get()}.xlsx') 
-    wb = load_workbook(f'../data/excel/{year}_{semester.get()}sem_IT{section.get()}.xlsx') 
-    sheet = wb.active 
-    sheet.column_dimensions['A'].width = 20
-    sheet.column_dimensions['B'].width = 15
-    sheet.column_dimensions['C'].width = 10
-    sheet.column_dimensions['D'].width = 10
-    sheet.column_dimensions['E'].width = 10
-    sheet.column_dimensions['F'].width = 15
-    sheet.column_dimensions['G'].width = 25
-
-    # write given data to an excel spreadsheet 
-    # at particular location 
-    sheet.cell(row=1, column=1).value = "Name"
-    sheet.cell(row=1, column=2).value = "Enrollment"
-    sheet.cell(row=1, column=3).value = "Course"
-    sheet.cell(row=1, column=4).value = "Section"
-    sheet.cell(row=1, column=5).value = "Semester"
-    sheet.cell(row=1, column=6).value = "Contact No"
-    sheet.cell(row=1, column=7).value = "Email id"
-    
-    
-    current_row = sheet.max_row 
-    current_column = sheet.max_column 
-
-    sheet.cell(row=current_row + 1, column=1).value = name.get()
-    sheet.cell(row=current_row + 1, column=2).value = enroll.get() 
-    sheet.cell(row=current_row + 1, column=3).value = course.get() 
-    sheet.cell(row=current_row + 1, column=4).value = section.get()
-    sheet.cell(row=current_row + 1, column=5).value = semester.get()
-    sheet.cell(row=current_row + 1, column=6).value = contact.get() 
-    sheet.cell(row=current_row + 1, column=7).value = email.get() 
-     
-    #wb.save(f'../data/excel/{year}/{year}_{semester.get()}sem_IT{section.get()}.xlsx') 
-    wb.save(f'../data/excel/{year}_{semester.get()}sem_IT{section.get()}.xlsx') 
-    clear()
-
-    print("form submitted")
-
-
-def clear(): 
-
-# clear the content of text entry box 
-    name.delete(0, END) 
-    enroll.delete(0, END) 
-    course.delete(0, END) 
-    semester.delete(0, END) 
-    section.delete(0, END) 
-    contact.delete(0, END) 
-    email.delete(0, END) 
-
-
-
 f1=Frame(l,pady="5",padx="25")
 l0=Label(f1,text="Registration Form",bg="orange",fg="blue",font="lucida 10 bold",width="35",pady="4").grid(columnspan=3,row=0,pady="15")
 l1=Label(f1,text="Name : ",font="lucida 10 bold").grid(column=0,row=1,pady="4")
@@ -301,11 +355,14 @@ course=Entry(f1,width="28")
 course.grid(column=1,row=3)
 
 l32=Label(f1,text="Section : ",font="lucida 10 bold").grid(column=0,row=4,pady="4")
-section=Entry(f1,width="28")
-section.grid(column=1,row=4)
+
+sectionn=Entry(f1,width="28")
+sectionn.grid(column=1,row=4)
+
 
 l33=Label(f1,text="Sem : ",font="lucida 10 bold").grid(column=0,row=5,pady="4")
-semester=Entry(f1,width="28")
+# inte = IntVar()
+semester=Entry(f1,width="28")#textvariable=inte
 semester.grid(column=1,row=5)
 
 l5=Label(f1,text="Contact No : ",font="lucida 10 bold").grid(column=0,row=6,pady="4")
@@ -315,41 +372,43 @@ contact.grid(column=1,row=6)
 l6=Label(f1,text="Email : ",font="lucida 10 bold").grid(column=0,row=7,pady="4")
 email=Entry(f1,width="28")
 email.grid(column=1,row=7)
-btn=Button(f1,text="Submit",bg="green",fg="white",width="10",font="lucida 10 bold",command=update_in_data_sheet)
+
+btn=Button(f1,text="Submit",bg="green",fg="white",width="10",font="lucida 10 bold",command = Register_in_record)
 btn.grid(columnspan=3,row=8,pady="10")
 f1.pack(pady="110")
 
-''' code for student registration  is end here     '''
+''' ************************************************************* Code for Registeration ENDS ********************************************************'''
     
-''' code for view student details  is start here     '''
+''' ************************************************************* Code for view details starts ********************************************************'''
 
+global Nv,Mv,Env,Nv
+Ev,Mv,Env,Nv =0,0,0,0
 def view():
-    
-    print(venroll.get(),vsem.get(),vyear.get(),vsection.get())
+
+    l = Retrive(venroll.get(),vsem.get()[0],vyear.get()[0],vsection.get()[0])
+    print('Record',l)
+    Ev,Nv,Env,Mv = l[0][0],l[0][1],l[0][2],l[0][3]
+   
+    l0=Label(f21,text="Student Details",bg="orange",fg="blue",font="lucida 10 bold",width="35",pady="4").grid(columnspan=3,row=0,pady="15")   
+    l1=Label(f21,text="Name : ",font="lucida 10 bold").grid(column=0,row=1,pady="4")
+    l11=Label(f21,text=Nv,width="28").grid(column=1,row=1)
+    l2=Label(f21,text="Enrollment No : ",font="lucida 10 bold").grid(column=0,row=2,pady="4")
+    l22=Label(f21,text=Ev,width="28").grid(column=1,row=2)
+    l3=Label(f21,text="SEM : ",font="lucida 10 bold").grid(column=0,row=3,pady="4")
+    l33=Label(f21,text=vsem.get()[0],width="28").grid(column=1,row=3)
+    l4=Label(f21,text="YEAR : ",font="lucida 10 bold").grid(column=0,row=4,pady="4")
+    l44=Label(f21,text=vyear.get()[0],width="28").grid(column=1,row=4)
+    l5=Label(f21,text="Contact No : ",font="lucida 10 bold").grid(column=0,row=5,pady="4")
+    l55=Label(f21,text=Mv,width="28").grid(column=1,row=5)
+    l6=Label(f21,text="Email : ",font="lucida 10 bold").grid(column=0,row=6,pady="4")
+    l66=Label(f21,text=Env,width="28").grid(column=1,row=6)
+
     f2.pack_forget()
     f21.pack(pady="100")
+
 def back():
     f21.pack_forget()
     f2.pack(pady="115")
-    
-f21=Frame(l,pady="25",padx="25")   
-l0=Label(f21,text="Student Details",bg="orange",fg="blue",font="lucida 10 bold",width="35",pady="4").grid(columnspan=3,row=0,pady="15")   
-l1=Label(f21,text="Name : ",font="lucida 10 bold").grid(column=0,row=1,pady="4")
-l11=Label(f21,text="from excel",width="28").grid(column=1,row=1)
-l2=Label(f21,text="Enrollment No : ",font="lucida 10 bold").grid(column=0,row=2,pady="4")
-l22=Label(f21,text="from excel",width="28").grid(column=1,row=2)
-l3=Label(f21,text="Course : ",font="lucida 10 bold").grid(column=0,row=3,pady="4")
-l33=Label(f21,text="from excel",width="28").grid(column=1,row=3)
-l4=Label(f21,text="Class : ",font="lucida 10 bold").grid(column=0,row=4,pady="4")
-l44=Label(f21,text="from excel",width="28").grid(column=1,row=4)
-l5=Label(f21,text="Contact No : ",font="lucida 10 bold").grid(column=0,row=5,pady="4")
-l55=Label(f21,text="from excel",width="28").grid(column=1,row=5)
-l6=Label(f21,text="Email : ",font="lucida 10 bold").grid(column=0,row=6,pady="4")
-l66=Label(f21,text="from excel",width="28").grid(column=1,row=6)
-btn=Button(f21,text="Back",bg="green",fg="white",width="10",font="lucida 10 bold",command=back)
-btn.grid(columnspan=3,row=7,pady="20")
-f21.pack(pady="100")   
-
 
 f2=Frame(l,pady="25",padx="25")
 l0=Label(f2,text="Student details",bg="orange",fg="blue",font="lucida 10 bold",width="35",pady="4").grid(columnspan=3,row=0,pady="15")
@@ -369,29 +428,51 @@ w1 = OptionMenu(f2,vsem,"1st_sem","2nd_sem","3rd_sem","4th_sem","5th_sem","6th_s
 
 l5=Label(f2,text="Section",font="lucida 10 bold").grid(column=0,row=5,pady="4")
 vsection = StringVar()
-vsection.set("IT-01") # default value
-w2 = OptionMenu(f2,vsection, "IT-01", "IT-02").grid(column=1,row=5,pady="4")
+# vsection.set("IT-01") # default value
+w2 = OptionMenu(f2,vsection, "1", "2").grid(column=1,row=5,pady="4")
 
 btn=Button(f2,text="OK",bg="green",fg="white",width="10",font="lucida 10 bold",command=view)
 btn.grid(columnspan=3,row=7,pady="20")
 f2.pack(pady="115")
 
 
-''' code for view student details  is end here     '''
 
-''' code for update student details  is start here     '''
+f21=Frame(l,pady="25",padx="25")   
+l0=Label(f21,text="Student Details",bg="orange",fg="blue",font="lucida 10 bold",width="35",pady="4").grid(columnspan=3,row=0,pady="15")   
+l1=Label(f21,text="Name : ",font="lucida 10 bold").grid(column=0,row=1,pady="4")
+l11=Label(f21,text=Nv,width="28").grid(column=1,row=1)
+l2=Label(f21,text="Enrollment No : ",font="lucida 10 bold").grid(column=0,row=2,pady="4")
+l22=Label(f21,text=Ev,width="28").grid(column=1,row=2)
+l3=Label(f21,text="SEM : ",font="lucida 10 bold").grid(column=0,row=3,pady="4")
+l33=Label(f21,text=vsem.get()[0],width="28").grid(column=1,row=3)
+l4=Label(f21,text="YEAR : ",font="lucida 10 bold").grid(column=0,row=4,pady="4")
+l44=Label(f21,text=vyear.get()[0],width="28").grid(column=1,row=4)
+l5=Label(f21,text="Contact No : ",font="lucida 10 bold").grid(column=0,row=5,pady="4")
+l55=Label(f21,text=Mv,width="28").grid(column=1,row=5)
+l6=Label(f21,text="Email : ",font="lucida 10 bold").grid(column=0,row=6,pady="4")
+l66=Label(f21,text=Env,width="28").grid(column=1,row=6)
+btn=Button(f21,text="Back",bg="green",fg="white",width="10",font="lucida 10 bold",command=back)
+btn.grid(columnspan=3,row=7,pady="20")
+# f21.pack(pady="100")   
+
+
+
+''' ************************************************************* Code for view details Ends ********************************************************'''
+
+''' ************************************************************* Code for  Update starts ********************************************************'''
 
 
 def update():
+    
     f3.pack_forget()
-    f31.pack(pady="100")
+    f31.pack(pady="100")    
     
 def cancel():
     f31.pack_forget()
     f3.pack(pady="115")
 def update_details():
-    print(uname.get(),ucourse.get(),ucls.get(),uenrollment.get(),ucontact.get(),uemail.get())
-    print("details updated")
+    new = [uname.get(),usem.get(),usec.get(),uenrollment.get(),ucontact.get(),uemail.get()]
+    modify_in_record(seme.get()[0],section.get(),new)
     
 
 f31=Frame(l,pady="25",padx="25")
@@ -404,14 +485,14 @@ l2=Label(f31,text="Enrollment No : ",font="lucida 10 bold").grid(column=0,row=2,
 
 uenrollment=StringVar()
 e2=Entry(f31,textvariable=uenrollment,width="28").grid(column=1,row=2) 
-l3=Label(f31,text="Course : ",font="lucida 10 bold").grid(column=0,row=3,pady="4")
+l3=Label(f31,text="Sem : ",font="lucida 10 bold").grid(column=0,row=3,pady="4")
 
-ucourse=StringVar()   
-e3=Entry(f31,textvariable=ucourse,width="28").grid(column=1,row=3) 
-l4=Label(f31,text="Class : ",font="lucida 10 bold").grid(column=0,row=4,pady="4")
+usem = StringVar()   
+e3=Entry(f31,textvariable=usem,width="28").grid(column=1,row=3) 
+l4=Label(f31,text="section : ",font="lucida 10 bold").grid(column=0,row=4,pady="4")
 
-ucls=StringVar()
-e4=Entry(f31,textvariable=ucls,width="28").grid(column=1,row=4) 
+usec=StringVar()
+e4=Entry(f31,textvariable=usec,width="28").grid(column=1,row=4) 
 l5=Label(f31,text="Contact No : ",font="lucida 10 bold").grid(column=0,row=5,pady="4")
 
 ucontact=StringVar()
@@ -430,36 +511,38 @@ f31.pack(pady="100")
 f3=Frame(l,pady="25",padx="25")
 l0=Label(f3,text="Update details",bg="orange",fg="blue",font="lucida 10 bold",width="35",pady="4").grid(columnspan=3,row=0,pady="15")
 l2=Label(f3,text="Enrollment No : ",font="lucida 10 bold").grid(column=0,row=2,pady="4")
-e2=Entry(f3,width="28").grid(column=1,row=2)
+en = StringVar()
+e2=Entry(f3,textvariable=en,width="28").grid(column=1,row=2)
 
 l3=Label(f3,text="Year",font="lucida 10 bold").grid(column=0,row=3,pady="4")
 year = StringVar()
-year.set("1st Year") # default value
+# year.set("1st Year") # default value
 w = OptionMenu(f3,year, "1st Year", "2nd Year", "3rd Year","4th Year").grid(column=1,row=3,pady="4")
 
 l4=Label(f3,text="Sem",font="lucida 10 bold").grid(column=0,row=4,pady="4")
-sem = StringVar()
-sem.set("1st sem") # default value
-w1 = OptionMenu(f3,sem,"1st sem","2nd sem","3rd sem","4th sem","5th sem","6th sem","7th sem","8th sem").grid(column=1,row=4,pady="4")
+seme = StringVar()
+# sem.set("1st sem") # default value
+w1 = OptionMenu(f3,seme,"1st sem","2nd sem","3rd sem","4th sem","5th sem","6th sem","7th sem","8th sem").grid(column=1,row=4,pady="4")
 
 l5=Label(f3,text="Section",font="lucida 10 bold").grid(column=0,row=5,pady="4")
 section = StringVar()
-section.set("IT-01") # default value
-w2 = OptionMenu(f3,section, "IT-01", "IT-02").grid(column=1,row=5,pady="4")
+# section.set("IT-01") # default value
+w2 = OptionMenu(f3,section, "1", "2").grid(column=1,row=5,pady="4")
 
 btn=Button(f3,text="OK",bg="green",fg="white",width="10",font="lucida 10 bold",command=update)
 btn.grid(columnspan=3,row=7,pady="20")
 f3.pack(pady="115")
 
-''' code for update student details  is end here     '''
+''' ************************************************************* Code for  Update Ends ********************************************************'''
 
-''' code for delete student details  is start here     '''
+''' ************************************************************* Code for Delete starts ********************************************************'''
 
-def delete():
+def delete_details():
     value = tmsg.askquestion("Delete student delails", "Are you sure")
     if value == "yes":
-        print("detail deleted")
+        print("deleting...")
         print(denroll.get(),dsem.get(),dyear.get(),dsection.get())
+        delete(denroll.get(),dsem.get()[0],dsection.get())
         
 f4=Frame(l,pady="25",padx="25")
 l0=Label(f4,text="Delete details",bg="orange",fg="blue",font="lucida 10 bold",width="35",pady="4").grid(columnspan=3,row=0,pady="15")
@@ -469,96 +552,117 @@ denl=Entry(f4,textvariable=denroll,width="28").grid(column=1,row=2)
 
 l3=Label(f4,text="Year",font="lucida 10 bold").grid(column=0,row=3,pady="4")
 dyear = StringVar()
-dyear.set("1st Year") # default value
+# dyear.set("1st Year") # default value
 w = OptionMenu(f4,dyear, "1st Year", "2nd Year", "3rd Year","4th Year").grid(column=1,row=3,pady="4")
 
 l4=Label(f4,text="Sem",font="lucida 10 bold").grid(column=0,row=4,pady="4")
 dsem = StringVar()
-dsem.set("1st sem") # default value
+# dsem.set("1st sem") # default value
 w1 = OptionMenu(f4,dsem,"1st sem","2nd sem","3rd sem","4th sem","5th sem","6th sem","7th sem","8th sem").grid(column=1,row=4,pady="4")
 
 l5=Label(f4,text="Section",font="lucida 10 bold").grid(column=0,row=5,pady="4")
 dsection = StringVar()
-dsection.set("IT-01") # default value
-w2 = OptionMenu(f4,dsection, "IT-01", "IT-02").grid(column=1,row=5,pady="4")
+# dsection.set("IT-01") # default value
+w2 = OptionMenu(f4,dsection, "1", "2").grid(column=1,row=5,pady="4")
 
-btn=Button(f4,text="Delete",bg="green",fg="white",width="10",font="lucida 10 bold",command=delete)
+btn=Button(f4,text="Delete",bg="green",fg="white",width="10",font="lucida 10 bold",command=delete_details)
 btn.grid(columnspan=3,row=7,pady="20")
 f4.pack(pady="115")
 
-''' code for delete student details  is end here     '''
+''' ************************************************************* Code for Delete Ends ********************************************************'''
+''' ************************************************************* Code for Recording attendance starts ********************************************************'''
+def detect1():
+    insertdate(desem.get()[0],desection.get())
+    dt.detect(desem.get()[0],desection.get())
+    # updatef()
 
 l.pack(ipadx="100",fill=BOTH)
 
-'''final code for student section  is end here     '''
-'''final code for attendance section  is start here     '''
-
 l1=Label(image=photo)
-'''code for Detect  is start here     '''
-
-def insertdate():
-    flag=0
-    for i in D.filterdates():
-        if str(i.day) == str(datetime.datetime.today().day) and str(i.month) == str(datetime.datetime.today().month) and str(i.year) == str(datetime.datetime.today().year):
-            flag=1
-    if flag==1:
-        wb = load_workbook('./data/Attendance_xlsx/third_year_5sem_IT2.xlsx')
-        print('Date:',str(i)[:11],' is written in excel and is a working day')
-        sheet = wb.active
-        current_row = sheet.max_row 
-        current_column = sheet.max_column
-        print(current_column)
-        sheet.column_dimensions['A'].width = 20
-        sheet.column_dimensions['B'].width = 20
-        sheet.cell(row=1, column=1).value = "Name"
-        sheet.cell(row=1, column=2).value = "Enrollment"
-
-
-        current_row = sheet.max_row
-        current_column = sheet.max_column
-        #sheet.cell(row=1,column=current_column).width = 20
-        sheet.cell(row=1, column=current_column+1).value = "".join(str(datetime.datetime.today())[:11])
-        
-        # save the file 
-        wb.save('./data/Attendance_xlsx/third_year_5sem_IT2.xlsx') 
-    
-    else:
-        print("this is a holiday popup..ask if they want to continue..")
-
-
-
-def detect1():
-    insertdate()
-    dt.detect()
-
-
-def update1():
-    up.updatef()
-
-def show1():
-    file="data/Attendance_xlsx/third_year_5sem_IT2.xlsx"
-    os.startfile("data/Attendance_xlsx/third_year_5sem_IT2.xlsx")
-    
 
 fd=Frame(l1,pady="25",padx="25")
 ld=Label(fd,text="This is Detect Section",bg="orange",fg="blue",font="lucida 10 bold",width="35",pady="4").grid(columnspan=3,row=0,pady="15")
+l4=Label(fd,text="Sem",font="lucida 10 bold").grid(column=0,row=1,pady="4")
+
+desem = StringVar()
+desem.set("1st sem") # default value
+
+w1 = OptionMenu(fd,desem,"1st sem","2nd sem","3rd sem","4th sem","5th sem","6th sem","7th sem","8th sem").grid(column=1,row=1,pady="4")
+l5=Label(fd,text="Section",font="lucida 10 bold").grid(column=0,row=2,pady="4")
+
+desection = StringVar()
+w2 = OptionMenu(fd,desection, "1", "2").grid(column=1,row=2,pady="4")
+
 b1=Button(fd,text="Detect",bg="green",fg="white",width="10",font="lucida 10 bold",command=detect1)
-b1.grid(columnspan=3,row=1,pady="20")
-b2=Button(fd,text="Update",bg="green",fg="white",width="10",font="lucida 10 bold",command=update1)
-b2.grid(columnspan=3,row=3,pady="20")
-b3=Button(fd,text="Show",bg="green",fg="white",width="10",font="lucida 10 bold",command=show1)
-b3.grid(columnspan=3,row=5,pady="20")
+b1.grid(columnspan=3,row=3,pady="20")
+
+
 fd.pack(pady="120")
 
-'''code for Detect  is end here     '''
-
-'''code for view excel  is start here     '''
-def open_excel():
-    if(year.get()=="noyear" or sect.get()=="nosec"):
-        pass
+def insertdate(sem,sec):
+    if sem == '1' or sem == '2':
+        year = 'first_year'
+    elif sem == '3' or sem == '4':
+        year = 'second_year'
+    elif sem == '5' or sem == '6':
+        year = 'third_year'
     else:
-        file="data/excel1\\"+year.get()+"_"+sem.get()+"_"+sect.get()+".xlsx"
-        os.startfile(file)
+        year = 'fourth_year'
+
+    flag=0
+    print('Checking if the date is working or not..')
+    for i in D.filterdates():
+        if str(i.day) == str(datetime.datetime.today().day) and str(i.month) == str(datetime.datetime.today().month) and str(i.year) == str(datetime.datetime.today().year):
+            flag=1
+    if flag==0:
+        value = tmsg.askquestion("this is a holiday.... want to continue.")
+        if value == "yes":
+            wb = load_workbook(f'data/Attendance_xlsx/{year}_{sem}sem_IT{sec}.xlsx')
+            if flag==0:
+                print('Date:',str(i)[:11],' is written in excel and is a holiday')
+            else:
+                print('Date:',str(i)[:11],' is written in excel and is a working day')
+
+            sheet = wb.active
+            current_row = sheet.max_row 
+            current_column = sheet.max_column
+            print(current_column)
+            sheet.column_dimensions['A'].width = 20
+            sheet.column_dimensions['B'].width = 20
+            sheet.cell(row=1, column=1).value = "Name"
+            sheet.cell(row=1, column=2).value = "Enrollment"
+
+
+            current_row = sheet.max_row
+            current_column = sheet.max_column
+            #sheet.cell(row=1,column=current_column).width = 20
+            sheet.cell(row=1, column=current_column+1).value = "".join(str(datetime.datetime.today())[:11])
+            
+            # save the file 
+            wb.save('data/Attendance_xlsx/third_year_5sem_IT2.xlsx') 
+    
+ 
+    
+
+''' ************************************************************* Code for Recording attendance Ends ********************************************************'''
+
+''' ************************************************************* Code for viewing Excel starts ********************************************************'''
+def open_excel():
+    sem = seme.get()[0]
+    sec= sect.get()
+    if sem == '1' or sem == '2':
+        year = 'first_year'
+    elif sem == '3' or sem == '4':
+        year = 'second_year'
+    elif sem == '5' or sem == '6':
+        year = 'third_year'
+    else:
+        year = 'fourth_year'
+
+    
+
+    file="data/excel/"+year+"\\"+year+"_"+sem+"sem_IT"+sec+".xlsx"   
+    os.startfile(file)
         
 fa=Frame(l1,pady="8",padx="20" ,height=200)
 Label(fa, text = "Select Year",bg="orange",fg="blue",font="lucida 10 bold",width="30").grid(columnspan=3,row=0,pady="10")
@@ -567,25 +671,27 @@ year.set("first_year")
 w1 = OptionMenu(fa,year,"first_year","second_year","third_year","fourth_year").grid(columnspan=3,row=1,pady="4")
 
 Label(fa, text = "Select Semester",bg="orange",fg="blue",font="lucida 10 bold",width="30").grid(columnspan=3,row=2,pady="10")
-sem = StringVar()
-sem.set("1sem") # default value
-w1 = OptionMenu(fa,sem,"1sem","2sem","3sem","4sem","5sem","6sem","7sem","8sem").grid(columnspan=3,row=3,pady="4")
+seme = StringVar()
+seme.set("1sem") # default value
+w1 = OptionMenu(fa,seme,"1sem","2sem","3sem","4sem","5sem","6sem","7sem","8sem").grid(columnspan=3,row=3,pady="4")
 
 
 sect = StringVar()
 sect.set("nosec")
 Label(fa, text = "Select Section",bg="orange",fg="blue",font="lucida 10 bold",width="30").grid(columnspan=3,row=5,pady="10")
-radio = Radiobutton(fa, text="IT-1",variable=sect, value="IT1").grid(column=0,row=6,pady="4")
-radio = Radiobutton(fa, text="IT-2", padx=14, variable=sect, value="IT2").grid(column=1,row=6,pady="4")
+radio = Radiobutton(fa, text="IT-1",variable=sect, value="1").grid(column=0,row=6,pady="4")
+radio = Radiobutton(fa, text="IT-2", padx=14, variable=sect, value="2").grid(column=1,row=6,pady="4")
 btn=Button(fa,text="show",bg="green",fg="white",width="10",font="lucida 10 bold",command=open_excel)
 btn.grid(columnspan=3,row=7,pady="0")
 fa.pack(pady="135")
-'''code for view excel  is end here     '''
-
 l1.pack(ipadx="150",fill=BOTH)
 
-'''final code for attendance section  is end here     '''
-'''final code for More section  is start here     '''
+
+
+''' ************************************************************* Code for viewing Excel Ends ********************************************************'''
+
+''' ************************************************************* Code for more details starts ********************************************************'''
+
 l2=Label(image=photo)
 
 f=Frame(l2,pady="25",padx="25")
@@ -596,10 +702,8 @@ lbl=Label(f,text="mobile : 1800-6512-154",bg="orange",fg="blue",font="lucida 10 
 f.pack(pady="195")
 
 l2.pack(ipadx="100",fill=BOTH)
-'''final code for More section  is end here     '''
 
-'''final code for admin section  is start here     '''    
+''' ************************************************************* Code for more details Ends ********************************************************'''
 
-
-'''final code for admin section  is end here     '''
+   
 root.mainloop()

@@ -51,7 +51,7 @@ def mail():
 
 
 def updatef():
-    filename = '/data/Attendance_xlsx/third_year_5sem_IT2.xlsx'
+    filename = '../data/Attendance_xlsx/third_year_5sem_IT2.xlsx'
     with open('data.csv') as f:
         data = csv.reader(f)
         lines = list(data)

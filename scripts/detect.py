@@ -6,8 +6,17 @@ import cv2
 from time import sleep
 
 
-def detect():
-    filename = 'data/Attendance_xlsx/third_year_5sem_IT2.xlsx'
+def detect(sem,sec):
+    if sem == '1' or sem == '2':
+        year = 'first_year'
+    elif sem == '3' or sem == '4':
+        year = 'second_year'
+    elif sem == '5' or sem == '6':
+        year = 'third_year'
+    else:
+        year = 'fourth_year'
+
+    filename = f'data/Attendance_xlsx/{year}_{sem}sem_IT{sec}.xlsx'
 
     fname = 'recognizer/trainingData.yml'
     if not os.path.isfile(fname):
@@ -51,7 +60,7 @@ def detect():
         # df = pd.read_csv('data.csv')
         # df.to_excel('data.xlsx',index=False)
 
-    def update_Excel():
+    def update_Excel(filename):
         with open('data.csv') as f:
             data = csv.reader(f)
             lines = list(data)
@@ -62,7 +71,8 @@ def detect():
                 writer.writerows(lines)
                 
         df = pd.read_csv('data.csv')
-        df.to_excel('data.xlsx',index = False)
+        df.to_excel(filename,index = False)
+        print('Attendance is marked in excel')
         
 
     face_cascade = cv2.CascadeClassifier('haarcascade/haarcascade_frontalface_default.xml')
@@ -113,7 +123,7 @@ def detect():
 
             
             
-            
+            f=1
             cv2.imshow('Face Recognizer',img)
             k = cv2.waitKey(30) & 0xff
             # if cv2.waitKey(33) == ord('a'):
@@ -122,11 +132,14 @@ def detect():
                 cap.release()
                 sleep(4)
                 print('we are done!')
-                
+                f=0
                 break
-        
+        if f==0:
+            update_Excel(filename)
+            cv2.destroyAllWindows()
+            break
 
 
 
-    #cv2.destroyAllWindows()
 
+    
