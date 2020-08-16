@@ -161,25 +161,7 @@ def delete(enroll,sem,sec):
     f.save()
     print('Record deleted successfully')
 
-def updatef():
-    filename = 'ddata/Attendance_xlsx/third_year_5sem_IT2.xlsx'
-    with open('data.csv') as f:
-        data = csv.reader(f)
-        lines = list(data)
-        if lines[1][0] == '0':
-            
-            for line in lines:
-                line.pop(0)
-            with open('data.csv','w') as g:
-                writer = csv.writer(g,lineterminator='\n')
-                writer.writerows(lines)
-            
-            df = pd.read_csv('data.csv')
-            df.to_excel(filename,index = False)
-            mail()
 
-        else:
-            print('Already Updated')
 
 '''*************************************************************** Code for CRUD operations Ends ****************************************************************''' 
 '''*************************************************************** Code for GUI starts ****************************************************************''' 
@@ -574,7 +556,7 @@ f4.pack(pady="115")
 def detect1():
     insertdate(desem.get()[0],desection.get())
     dt.detect(desem.get()[0],desection.get())
-    # updatef()
+    
 
 l.pack(ipadx="100",fill=BOTH)
 

@@ -1,4 +1,12 @@
 import smtplib
+import numpy as np
+import pandas as pd
+import os
+import csv
+import cv2
+from time import sleep
+import mail as m
+
 
 
 def send_mail_student(sender,reciever,mail_body,mail_subject):
@@ -29,3 +37,59 @@ def send_mail(line):
     mail_body = 'Your Attendance has been marked, current attendance 74%'
     mail_subject = 'Attendance notification'
     send_mail_student(sender,reciever,mail_body,mail_subject)
+
+
+
+
+
+def mail(sem,sec):
+    if sem == '1' or sem == '2':
+        year = 'first_year'
+    elif sem == '3' or sem == '4':
+        year = 'second_year'
+    elif sem == '5' or sem == '6':
+        year = 'third_year'
+    else:
+        year = 'fourth_year'
+    filename = f'data/excel/{year}/{year}_{sem}sem_IT{sec}.xlsx'
+
+
+    def from_excel_to_csv():
+        df = pd.read_excel(filename,index=False)
+        df.to_csv('./current.csv')
+
+    def getdata_details():
+        details,roll = getdata()
+        #print('Mail sended to',l)
+
+        with open('./current.csv','r') as f:
+            data = csv.reader(f)
+            next(data)
+            lines = list(data)
+            for line in lines:
+                for i in line:
+                    if i in roll:
+                        print(i)
+                        for detail in details:
+                            if i in detail:
+                                send_mail(line)
+                #print(line)
+                
+
+    def getdata():
+        l=[]
+        roll=[]
+        with open('./data.csv','r') as f:
+            data = csv.reader(f)
+            next(data)
+            lines = list(data)
+            for line in lines:
+                if line[-1]=='1':
+                    l.append(line)
+                    roll.append(line[1])
+                    #print(line[1])
+        
+        
+        return l,roll
+    from_excel_to_csv()
+    getdata_details()

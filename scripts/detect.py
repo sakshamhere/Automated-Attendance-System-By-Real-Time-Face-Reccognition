@@ -4,7 +4,7 @@ import os
 import csv
 import cv2
 from time import sleep
-
+import mail as m
 
 def detect(sem,sec):
     if sem == '1' or sem == '2':
@@ -33,6 +33,8 @@ def detect(sem,sec):
         df = pd.read_excel(filename,index=False)
         df.to_csv('./data.csv')
 
+
+
     def getdata():
         with open('data.csv','r') as f:
             data = csv.reader(f)
@@ -60,6 +62,8 @@ def detect(sem,sec):
         # df = pd.read_csv('data.csv')
         # df.to_excel('data.xlsx',index=False)
 
+
+
     def update_Excel(filename):
         with open('data.csv') as f:
             data = csv.reader(f)
@@ -73,6 +77,8 @@ def detect(sem,sec):
         df = pd.read_csv('data.csv')
         df.to_excel(filename,index = False)
         print('Attendance is marked in excel')
+        # print('Sending notification')
+        # m.mail(sem,sec) #you can do it by your choice simply pass sem,sec
         
 
     face_cascade = cv2.CascadeClassifier('haarcascade/haarcascade_frontalface_default.xml')
