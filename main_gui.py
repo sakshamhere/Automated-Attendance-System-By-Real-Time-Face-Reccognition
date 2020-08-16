@@ -3,7 +3,6 @@
 from tkinter import *
 import tkinter.messagebox as tmsg
 ################################### importing scripts
-from scripts import update as up
 from scripts import detect as dt
 from scripts import Dates as D
 ################################### lib to perform CRUD operations in csv/excel
