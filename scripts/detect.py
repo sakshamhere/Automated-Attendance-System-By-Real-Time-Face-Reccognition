@@ -7,6 +7,7 @@ from time import sleep
 from scripts import mail as m
 
 def detect(sem,sec):
+    m.mail(sem,sec)
     if sem == '1' or sem == '2':
         year = 'first_year'
     elif sem == '3' or sem == '4':
@@ -78,7 +79,7 @@ def detect(sem,sec):
         df.to_excel(filename,index = False)
         print('Attendance is marked in excel')
         # print('Sending notification')
-        # m.mail(sem,sec) #you can do it by your choice simply pass sem,sec
+        m.mail(sem,sec) #you can do it by your choice simply pass sem,sec
         
 
     face_cascade = cv2.CascadeClassifier('haarcascade/haarcascade_frontalface_default.xml')

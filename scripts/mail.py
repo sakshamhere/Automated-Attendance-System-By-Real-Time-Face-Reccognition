@@ -15,7 +15,7 @@ def send_mail_student(sender,reciever,mail_body,mail_subject):
     server.starttls() #encrypts are connection
     server.ehlo()
 
-    server.login('sam9111doshi@gmail.com','9111204454')
+    server.login('email','pass') #pass your email and pass
 
     subject = mail_subject
     body = mail_body
@@ -43,6 +43,7 @@ def send_mail(line):
 
 
 def mail(sem,sec):
+    print(sem,sec)
     if sem == '1' or sem == '2':
         year = 'first_year'
     elif sem == '3' or sem == '4':
