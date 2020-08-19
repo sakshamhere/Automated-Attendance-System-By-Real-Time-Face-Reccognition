@@ -7,7 +7,9 @@ import cv2
 from time import sleep
 
 
-
+#Please change the data file as the mails present in file are of real people!!!!!
+#Please change the data file as the mails present in file are of real people!!!!!
+#Please change the data file as the mails present in file are of real people!!!!!
 
 def send_mail_student(sender,reciever,mail_body,mail_subject):
     server = smtplib.SMTP('smtp.gmail.com',587)
@@ -15,7 +17,8 @@ def send_mail_student(sender,reciever,mail_body,mail_subject):
     server.starttls() #encrypts are connection
     server.ehlo()
 
-    server.login('email','pass') #pass your email and pass
+    server.login('your email','your pass') # put your email pass 
+                                            #turn on -> https://myaccount.google.com/lesssecureapps
 
     subject = mail_subject
     body = mail_body
@@ -32,8 +35,9 @@ def send_mail_student(sender,reciever,mail_body,mail_subject):
 
 def send_mail(line):
     print(line)
-    sender = line[3]
-    reciever = line[4]
+    print(line)
+    sender = 'your email' # put your email
+    reciever = line[3] #Please change the data file as the mails present in file are of real people!!!!!
     mail_body = 'Your Attendance has been marked, current attendance 74%'
     mail_subject = 'Attendance notification'
     send_mail_student(sender,reciever,mail_body,mail_subject)
