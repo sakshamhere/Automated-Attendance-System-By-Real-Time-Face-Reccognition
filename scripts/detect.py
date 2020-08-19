@@ -4,7 +4,7 @@ import os
 import csv
 import cv2
 from time import sleep
-import mail as m
+from scripts import mail as m
 
 def detect(sem,sec):
     if sem == '1' or sem == '2':
